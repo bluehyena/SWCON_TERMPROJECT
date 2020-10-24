@@ -3,9 +3,9 @@
 #        Team: 소융개론텀프로젝트 이준혁,임성은
 #  Programmer: 이준혁     
 #  Start Date: 06/10/22
-#  Update Num: 2
+#  Update Num: 3
 #First Update: Oct 22, 2020
-# Last Update: Oct 22, 2020
+# Last Update: Oct 25, 2020
 #     Purpose: Crawling Instagram.
 """
 import time
@@ -22,6 +22,7 @@ class Instagram_crawler:
         self.__instagram_id = env.instagram_user_id
         self.__instagram_password = env.instagram_user_password
         self.img_idx = 0
+        self.img_slide = 0
         # self.headers = {"User-Agent":env.User_Agent}
         # self.options = webdriver.ChromeOptions()
         # self.options.headless = True
@@ -30,7 +31,7 @@ class Instagram_crawler:
         # self.browser = webdriver.Chrome(options=self.options)
         self.browser = webdriver.Chrome()
 
-    def login(self, url: str) -> None:
+    def login(self, url: str) -> None: #Fin
         """
         Login to instagram browser.
 
@@ -54,7 +55,7 @@ class Instagram_crawler:
         self.browser.find_element_by_xpath("//*[@id='loginForm']/div/div[3]/button/div").click()
         time.sleep(3)
 
-    def scroll_down_once(self) -> None:
+    def scroll_down_once(self) -> None: #Fin
         """
         Scroll down the browser just ONCE.
 
@@ -69,7 +70,7 @@ class Instagram_crawler:
         """    
         self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight)")
 
-    def scroll_down_end(self) -> None:
+    def scroll_down_end(self) -> None: #Fin
         """
         Scroll down the browser to the end of the page.
 
@@ -91,7 +92,7 @@ class Instagram_crawler:
                 break
             prev_height = curr_height
     
-    def change_url(self, url: str) -> None:
+    def change_url(self, url: str) -> None: #Fin (time interval changeable)
         """
         Change browser to the other tab.
 
@@ -109,7 +110,7 @@ class Instagram_crawler:
         self.browser.get(url)
         time.sleep(2)
 
-    def click_feed_image(self) -> None:
+    def click_feed_image(self) -> None: #Fin
         """
         Click image of instagram feed.
         
@@ -125,49 +126,76 @@ class Instagram_crawler:
         self.browser.find_element_by_class_name("_9AhH0").click()
         time.sleep(1)
 
-    def save_image(self) -> str:  #Need fix
+    def save_feed_images(self) -> None:  #Need fix
         """
         Crawl image of instagram feed and save .
         
         Args:
-            url: String value of url to be changed.
+            None
 
         Returns:
-            If crawling success, return str of image's src. 
+            None
 
         Raises:
             None
         """
-
-        self.img_idx += 1
-      
-        soup = BeautifulSoup(self.browser.page_source, "lxml")
-        #Need fix
-        img = soup.find("img", attrs={"class":"FFVAD"})
-        img_url = img["src"]
+        #Make directory for crawled images.
+        if not os.path.exists("image_dir"):
+            os.mkdir("image_dir")
         
-        img_res = requests.get(img_url)
-        img_res.raise_for_status()
-
-        # Need fix
-        with open("image_dir\mbti_image{}.jpg".format(self.img_idx), "wb") as f:
-            f.write(img_res.content)
-
-    def load_another_image(self) -> None: 
-        """
-        Load other images by click button.
+        self.next_slide_button = self.browser.find_element_by_class_name("coreSpriteRightChevron")
+        self.next_feed_button = self.browser.find_element_by_class_name("_65Bje.coreSpriteRightPaginationArrow")
         
-        Args:
-            url: String value of url to be changed.
+        # img_idx 로 몇번째 사진인지 명시
+        # img_slide 로 게시물당 몇번째의 사진인지 명시하여 다음 게시물로 넘어갈지 판단
+        # 맨 끝 img_slide 일 경우 다음 게시물로 넘어가는 버튼클릭, img_slide = 0 으로 다시 초기화.
+        # Try Except 추가 필요
+        
+        while True:
+            self.img_idx += 1
+            self.img_slide += 1
 
-        Returns:
-            If crawling success, return str of image's src. 
+            if self.img_slide == 1:
+                soup = BeautifulSoup(self.browser.page_source, "lxml")
+                img = soup.find("img", attrs={"class":"FFVAD"})
+                img_url = img["src"]
+                img_res = requests.get(img_url)
+                img_res.raise_for_status()
 
-        Raises:
-            None
-        """
-        self.browser.find_element_by_xpath("/html/body/div[4]/div[2]/div/article/div[2]/div/div[1]/div[2]/div/button/div").click()
-        time.sleep(0.3)
+                # Save images into jpg file.
+                with open("image_dir\mbti_image{}.jpg".format(self.img_idx), "wb") as f:
+                    f.write(img_res.content)
+
+                # Next button
+                if self.next_slide_button:
+                    self.next_slide_button.click()
+                    time.sleep(0.3)
+                # If next button isn't exist, click another feed button
+                else:
+                    self.next_feed_button.click()
+                    self.img_slide = 0
+                    time.sleep(1.5)
+
+            else:
+                soup = BeautifulSoup(self.browser.page_source, "lxml")
+                img = soup.find("img", attrs={"class":"FFVAD"})
+                img_url = img["src"]
+                img_res = requests.get(img_url)
+                img_res.raise_for_status()
+
+                # Save images into jpg file.
+                with open("image_dir\mbti_image{}.jpg".format(self.img_idx), "wb") as f:
+                    f.write(img_res.content)
+
+                # Next button
+                if self.next_slide_button:
+                    self.next_slide_button.click()
+                    time.sleep(0.3)
+                # If next button isn't exist, click another feed button
+                else:
+                    self.next_feed_button.click()
+                    self.img_slide = 0
+                    time.sleep(1.5)
 
     def run(self):
         """
@@ -195,9 +223,8 @@ class Instagram_crawler:
 
 
         self.click_feed_image()
-        self.save_image()
-        self.load_another_image()
-        self.save_image()
+        self.save_feed_images()
+
 
 if __name__ == "__main__":
     url = "https://www.instagram.com/"
