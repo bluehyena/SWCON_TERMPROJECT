@@ -3,9 +3,9 @@
 #        Team: 소융개론텀프로젝트 이준혁,임성은
 #  Programmer: 이준혁     
 #  Start Date: 06/10/22
-#  Update Num: 3
+#  Update Num: 4
 #First Update: Oct 22, 2020
-# Last Update: Oct 25, 2020
+# Last Update: Oct 26, 2020
 #     Purpose: Crawling Instagram.
 """
 import time
@@ -227,6 +227,7 @@ class Instagram_crawler:
         self.click_feed_image()
         self.save_feed_images()
 
+# Success
 class Everytime_crawler:
     def __init__(self):
         self.__everytime_id = env.everytime_user_id
@@ -363,7 +364,7 @@ class Everytime_crawler:
                 data = [column.get_text().strip() for column in columns]
                 writer.writerow(data)
 
-    def run(self) -> None:
+    def Crawl_MBTI_Articles(self) -> None:
         self.login(url)
         self.crawl_mbti_article_button_click()
         # self.crawl_mbti_article_by_requests("https://khu.everytime.kr/460213/p/")
@@ -376,6 +377,6 @@ if __name__ == "__main__":
 
     # try:
     # instagram.run()
-    everytime.run()
+    everytime.Crawl_MBTI_Articles()
     # except:
         # print("[ERROR]")
