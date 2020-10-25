@@ -11,12 +11,14 @@
 import time
 import requests
 import os
+import csv
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
 import env
 
+# Need Fix
 class Instagram_crawler:
     def __init__(self):
         self.__instagram_id = env.instagram_user_id
@@ -225,11 +227,155 @@ class Instagram_crawler:
         self.click_feed_image()
         self.save_feed_images()
 
+class Everytime_crawler:
+    def __init__(self):
+        self.__everytime_id = env.everytime_user_id
+        self.__everytime_password = env.everytime_user_password
+        self.extender = ".csv"
+        # self.headers = {"User-Agent":env.User_Agent}
+        # self.options = webdriver.ChromeOptions()
+        # self.options.headless = True
+        # self.options.add_argument("window-size=1920x1080")
+        # self.options.add_argument(f"user-agent={env.User_Agent}")
+        # self.browser = webdriver.Chrome(options=self.options)
+        self.browser = webdriver.Chrome()
+    
+    def login(self, url: str) -> None:
+        """
+        Login to everytime browser.
+
+        Args:
+            url: String value of url of everytime.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
+        assert isinstance(url, str)
+
+        self.browser.get(url)
+        self.browser.maximize_window()
+        id_box = self.browser.find_element_by_xpath("//*[@id='container']/form/p[1]/input")
+        password_box = self.browser.find_element_by_xpath("//*[@id='container']/form/p[2]/input")
+        id_box.send_keys(self.__everytime_id)
+        password_box.send_keys(self.__everytime_password)
+        self.browser.find_element_by_xpath("//*[@id='container']/form/p[3]/input").click()
+        time.sleep(2)
+    
+    def change_url(self, url: str) -> None: #Fin (time interval changeable)
+        """
+        Change browser to the other tab.
+
+        Args:
+            url: String value of url to be changed.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
+        assert isinstance(url, str)
+        
+        self.browser.get(url)
+        time.sleep(1)
+
+    def crawl_mbti_article_button_click(self):
+        """
+        Crawl mbti article.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
+        # Write as csv
+        f = open("MBTI_Article" + self.extender, "w", encoding="utf-8-sig", newline="")
+        writer = csv.writer(f)
+        
+        # Write first row
+        title = "이름   작성시간    내용    공감    댓글".split("\t")
+        writer.writerow(title)
+
+        next_article_button = self.browser.find_element_by_class_name("next")
+
+        while next_article_button:
+            soup = BeautifulSoup(self.browser.page_source, "lxml")
+            articles = soup.find_all("article")
+            
+            #I want to change codes.
+            for article in articles:
+                writer_name = article.find("h3", attrs={"class":"medium"}).get_text()
+                write_time = article.find("time", attrs={"class":"medium"}).get_text()
+                contents = article.find("p", attrs={"class":"medium"}).get_text()
+                recommend = article.find("li", attrs={"class":"vote"}).get_text()
+                comments = article.find("li", attrs={"class":"comment"}).get_text()
+                data = [writer_name, write_time, contents, recommend, comments]
+                # columns = article.find_all(attrs={"class":"medium"})
+                # for columns in column:
+                #     data = [column.get_text().strip()]
+                writer.writerow(data)
+
+            next_article_button.click()
+            time.sleep(1)
+            try:
+                next_article_button = self.browser.find_element_by_class_name("next")
+            except:
+                break
+
+    def crawl_mbti_article_by_requests(self, url: str) -> None: # X
+        """
+        Crawl mbti article.
+
+        Args:
+            String type -> url : "https://khu.everytime.kr/460213/p/"
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
+        # Write as csv
+        f = open("MBTI_Article" + self.extender, "w", encoding="utf-8-sig", newline="")
+        writer = csv.writer(f)
+        
+        # Write first row
+        title = "이름   작성시간    내용    공감    댓글".split("\t")
+        writer.writerow(title)
+
+        for page in range(1, 10):
+            self.change_url(url + str(page))
+            res = requests.get(url + str(page))
+            res.raise_for_status()
+            soup = BeautifulSoup(res.text, "lxml")
+
+            articles = soup.find("div", attrs={"class":"wrap articles"}).find_all("article")
+
+            for article in articles:
+                columns = article.find_all(attrs={"medium"})
+                data = [column.get_text().strip() for column in columns]
+                writer.writerow(data)
+
+    def run(self) -> None:
+        self.login(url)
+        self.crawl_mbti_article_button_click()
+        # self.crawl_mbti_article_by_requests("https://khu.everytime.kr/460213/p/")
 
 if __name__ == "__main__":
-    url = "https://www.instagram.com/"
-    instagram = Instagram_crawler()
+    # url = "https://www.instagram.com/"
+    url = "https://khu.everytime.kr/460213/p/1"
+    # instagram = Instagram_crawler()
+    everytime = Everytime_crawler()
+
     # try:
-    instagram.run()
+    # instagram.run()
+    everytime.run()
     # except:
         # print("[ERROR]")
