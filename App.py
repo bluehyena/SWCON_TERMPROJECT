@@ -142,8 +142,8 @@ class Instagram_crawler:
             None
         """
         #Make directory for crawled images.
-        if not os.path.exists("image_dir"):
-            os.mkdir("image_dir")
+        if not os.path.exists("image_dir_instagram"):
+            os.mkdir("image_dir_instagram")
         
         self.next_slide_button = self.browser.find_element_by_class_name("coreSpriteRightChevron")
         self.next_feed_button = self.browser.find_element_by_class_name("_65Bje.coreSpriteRightPaginationArrow")
@@ -165,7 +165,7 @@ class Instagram_crawler:
                 img_res.raise_for_status()
 
                 # Save images into jpg file.
-                with open("image_dir\mbti_image{}.jpg".format(self.img_idx), "wb") as f:
+                with open("image_dir_instagram\mbti_image{}.jpg".format(self.img_idx), "wb") as f:
                     f.write(img_res.content)
 
                 # Next button
@@ -186,7 +186,7 @@ class Instagram_crawler:
                 img_res.raise_for_status()
 
                 # Save images into jpg file.
-                with open("image_dir\mbti_image{}.jpg".format(self.img_idx), "wb") as f:
+                with open("image_dir_instagram\mbti_image{}.jpg".format(self.img_idx), "wb") as f:
                     f.write(img_res.content)
 
                 # Next button
@@ -373,6 +373,7 @@ class Facebook_crawler:
     def __init__(self):
         self.__facebook_id = env.facebook_user_id
         self.__facebook_password = env.facebook_user_password
+        self.img_idx = 0
         # self.headers = {"User-Agent":env.User_Agent}
         # self.options = webdriver.ChromeOptions()
         # self.options.headless = True
@@ -381,7 +382,6 @@ class Facebook_crawler:
         # self.browser = webdriver.Chrome(options=self.options)
         self.browser = webdriver.Chrome()
 
-    #Is it really need?
     def login(self, url: str) -> None:
         """
         Login to facebook browser.
@@ -399,10 +399,79 @@ class Facebook_crawler:
 
         self.browser.get(url)
         self.browser.maximize_window()
+        id_box = self.browser.find_element_by_xpath("//*[@id='email']")
+        password_box = self.browser.find_element_by_xpath("//*[@id='pass']")
+        id_box.send_keys(self.__facebook_id)
+        password_box.send_keys(self.__facebook_password)
+        self.browser.find_element_by_xpath("//*[@id='u_0_b']").click()
+        time.sleep(5)
+
+    def facebook_search(self, keyword: str) -> None:
+        """
+        Get url of photo search results.
+
+        Args:
+            keyword: String value of search keyword.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
+        assert isinstance(url, str)
+
+        self.browser.get("https://www.facebook.com/search/photos/?q={}&f=Abq5viFjnqY8pEJ1tXdlsa-MJceSBvYLS0x1SYUmJdIk5_6DaAgdVJ-z4q0dQMKWJGZfCM3IkeF1yvyE7x-rr4CU2xgJgOh7tdpM1PnaD-HJz3k4dv4DTFXb54XGreqGyfs".format(keyword))
         time.sleep(2)
+
+    def scroll_down(self) -> None: #Fin
+        """
+        Scroll down the page of the browser. (100)
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
+        prev_height = self.browser.execute_script("return document.body.scrollHeight")
+        scroll_num = 0
+
+        while scroll_num <= 50:
+            self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+            time.sleep(2)
+            curr_height = self.browser.execute_script("return document.body.scrollHeight")
+            if curr_height == prev_height:
+                break
+            prev_height = curr_height
+            scroll_num += 1
+    
+    def crawl_facebook_image(self) -> None:
+        if not os.path.exists("image_dir_instagram"):
+            os.mkdir("image_dir_instagram")
+        
+        soup = BeautifulSoup(self.browser.page_source, "lxml")
+        
+        while True:
+            img = soup.select("img")[self.img_idx]
+            img_url = img["src"]
+            img_res = requests.get(img_url)
+            img_res.raise_for_status()
+            self.img_idx += 1
+
+            # Save images into jpg file.
+            with open("image_dir_facebook\mbti_image{}.jpg".format(self.img_idx), "wb") as f:
+                f.write(img_res.content)
+
 
     def run(self): 
         self.login(url)
+        self.facebook_search("MBTI")
+        self.scroll_down()
+        self.crawl_facebook_image()
         
 if __name__ == "__main__":
     # url = "https://www.instagram.com/"
