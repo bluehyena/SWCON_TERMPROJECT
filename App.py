@@ -369,14 +369,52 @@ class Everytime_crawler:
         self.crawl_mbti_article_button_click()
         # self.crawl_mbti_article_by_requests("https://khu.everytime.kr/460213/p/")
 
+class Facebook_crawler:
+    def __init__(self):
+        self.__facebook_id = env.facebook_user_id
+        self.__facebook_password = env.facebook_user_password
+        # self.headers = {"User-Agent":env.User_Agent}
+        # self.options = webdriver.ChromeOptions()
+        # self.options.headless = True
+        # self.options.add_argument("window-size=1920x1080")
+        # self.options.add_argument(f"user-agent={env.User_Agent}")
+        # self.browser = webdriver.Chrome(options=self.options)
+        self.browser = webdriver.Chrome()
+
+    #Is it really need?
+    def login(self, url: str) -> None:
+        """
+        Login to facebook browser.
+
+        Args:
+            url: String value of url of everytime.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
+        assert isinstance(url, str)
+
+        self.browser.get(url)
+        self.browser.maximize_window()
+        time.sleep(2)
+
+    def run(self): 
+        self.login(url)
+        
 if __name__ == "__main__":
     # url = "https://www.instagram.com/"
-    url = "https://khu.everytime.kr/460213/p/1"
+    # url = "https://khu.everytime.kr/460213/p/1"
+    url = "https://www.facebook.com"
     # instagram = Instagram_crawler()
-    everytime = Everytime_crawler()
+    # everytime = Everytime_crawler()
+    facebook = Facebook_crawler()
 
     # try:
     # instagram.run()
-    everytime.Crawl_MBTI_Articles()
+    # everytime.Crawl_MBTI_Articles()
+    facebook.run()
     # except:
         # print("[ERROR]")
