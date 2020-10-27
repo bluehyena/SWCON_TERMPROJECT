@@ -18,6 +18,7 @@ from selenium import webdriver
 
 import env
 
+
 # Need Fix
 class Instagram_crawler:
     def __init__(self):
