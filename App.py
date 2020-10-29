@@ -3,9 +3,9 @@
 #        Team: 소융개론텀프로젝트 이준혁,임성은
 #  Programmer: 이준혁     
 #  Start Date: 06/10/22
-#  Update Num: 4
+#  Update Num: 6
 #First Update: Oct 22, 2020
-# Last Update: Oct 26, 2020
+# Last Update: Oct 29, 2020
 #     Purpose: Crawling Instagram.
 """
 import time
@@ -17,7 +17,6 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 
 import env
-
 
 # Need Fix
 class Instagram_crawler:
@@ -213,8 +212,8 @@ class Instagram_crawler:
         Raises:
             None
         """
-        self.login(url)
-        self.change_url(url+"mbti_bot/")
+        self.login(url1)
+        self.change_url(url1+"mbti_bot/")
         
         
         # for 게시물 in range(게시물 개수):
@@ -352,6 +351,7 @@ class Everytime_crawler:
         title = "이름   작성시간    내용    공감    댓글".split("\t")
         writer.writerow(title)
 
+
         for page in range(1, 10):
             self.change_url(url + str(page))
             res = requests.get(url + str(page))
@@ -366,22 +366,23 @@ class Everytime_crawler:
                 writer.writerow(data)
 
     def Crawl_MBTI_Articles(self) -> None:
-        self.login(url)
+        self.login(url2)
         self.crawl_mbti_article_button_click()
         # self.crawl_mbti_article_by_requests("https://khu.everytime.kr/460213/p/")
 
+# Success
 class Facebook_crawler:
     def __init__(self):
         self.__facebook_id = env.facebook_user_id
         self.__facebook_password = env.facebook_user_password
         self.img_idx = 0
-        # self.headers = {"User-Agent":env.User_Agent}
-        # self.options = webdriver.ChromeOptions()
+        self.headers = {"User-Agent":env.User_Agent}
+        self.options = webdriver.ChromeOptions()
         # self.options.headless = True
         # self.options.add_argument("window-size=1920x1080")
-        # self.options.add_argument(f"user-agent={env.User_Agent}")
-        # self.browser = webdriver.Chrome(options=self.options)
-        self.browser = webdriver.Chrome()
+        self.options.add_argument(f"user-agent={env.User_Agent}")
+        self.browser = webdriver.Chrome(options=self.options)
+        # self.browser = webdriver.Chrome()
 
     def login(self, url: str) -> None:
         """
@@ -420,9 +421,9 @@ class Facebook_crawler:
         Raises:
             None
         """
-        assert isinstance(url, str)
+        assert isinstance(keyword, str)
 
-        self.browser.get("https://www.facebook.com/search/photos/?q={}&f=Abq5viFjnqY8pEJ1tXdlsa-MJceSBvYLS0x1SYUmJdIk5_6DaAgdVJ-z4q0dQMKWJGZfCM3IkeF1yvyE7x-rr4CU2xgJgOh7tdpM1PnaD-HJz3k4dv4DTFXb54XGreqGyfs".format(keyword))
+        self.browser.get("https://www.facebook.com/search/photos/?q={}&f=Abq5qXf0_ZNwIGQfFDy24hLClFdueEZblC7URUZKEA4l47eFSft1gTUGEOBFmfuN4ugqXCKaUApxvwx0ivjpyKWG738gZTaM6HueIn7brz0IwCXuwly1n1jnJm8_iwEyxj8".format(keyword))
         time.sleep(2)
 
     def scroll_down(self) -> None: #Fin
@@ -469,15 +470,35 @@ class Facebook_crawler:
 
 
     def run(self): 
-        self.login(url)
+        self.login(url3)
         self.facebook_search("MBTI")
         self.scroll_down()
         self.crawl_facebook_image()
-        
+
+# Success
+class Dcinside_crawler:
+    def __init__(self):
+        self.browser = webdriver.Chrome()
+        self.mbti_url = ["entp","enfp","entj","enfj","esfp","esfj","estj","esfp",
+                         "intp_mbti","infp","intj","infj","isfp","isfj","istj","isfp"]
+        self.keyword_idx = 0
+        self.headers = {"User-Agent":env.User_Agent}
+        self.options = webdriver.ChromeOptions()
+        # self.options.headless = True
+        # self.options.add_argument("window-size=1920x1080")
+        self.options.add_argument(f"user-agent={env.User_Agent}")
+        self.browser = webdriver.Chrome(options=self.options)
+
+    def change_url(self):
+        self.keyword_idx
+        url = ("https://gall.dcinside.com/mgallery/board/lists?id={}").format(self.mbti_url[self.keyword_idx])
+        self.browser.get(url)
+        time.sleep(2)
+
 if __name__ == "__main__":
-    # url = "https://www.instagram.com/"
-    # url = "https://khu.everytime.kr/460213/p/1"
-    url = "https://www.facebook.com"
+    url1 = "https://www.instagram.com/"
+    url2 = "https://khu.everytime.kr/460213/p/1"
+    url3 = "https://www.facebook.com"
     # instagram = Instagram_crawler()
     # everytime = Everytime_crawler()
     facebook = Facebook_crawler()
