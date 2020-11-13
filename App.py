@@ -3,9 +3,9 @@
 #        Team: 소융개론텀프로젝트 이준혁,임성은
 #  Programmer: 이준혁     
 #  Start Date: 06/10/22
-#  Update Num: 6
+#  Update Num: 9
 #First Update: Oct 22, 2020
-# Last Update: Oct 29, 2020
+# Last Update: Nov 13, 2020
 #     Purpose: Crawling Instagram.
 """
 import time
