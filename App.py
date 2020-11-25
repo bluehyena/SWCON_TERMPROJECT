@@ -6,7 +6,7 @@
 #  Update Num: 9
 #First Update: Oct 22, 2020
 # Last Update: Nov 13, 2020
-#     Purpose: Crawling Instagram.
+#     Purpose: Crawling Instagram, FaceBook, Everytime, DCinside about MBTI.
 """
 import time
 import requests
@@ -452,8 +452,8 @@ class Facebook_crawler:
             scroll_num += 1
     
     def crawl_facebook_image(self) -> None:
-        if not os.path.exists("image_dir_instagram"):
-            os.mkdir("image_dir_instagram")
+        if not os.path.exists("image_dir_facebook"):
+            os.mkdir("image_dir_facebook")
         
         soup = BeautifulSoup(self.browser.page_source, "lxml")
         
