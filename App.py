@@ -475,11 +475,10 @@ class Facebook_crawler:
         self.scroll_down()
         self.crawl_facebook_image()
 
-# Success
+# Progress
 class Dcinside_crawler:
     def __init__(self):
-        self.browser = webdriver.Chrome()
-        self.mbti_url = ["entp","enfp","entj","enfj","esfp","esfj","estj","esfp",
+        self.mbti_urls = ["entp","enfp","entj","enfj","esfp","esfj","estj","esfp",
                          "intp_mbti","infp","intj","infj","isfp","isfj","istj","isfp"]
         self.keyword_idx = 0
         self.headers = {"User-Agent":env.User_Agent}
@@ -489,11 +488,23 @@ class Dcinside_crawler:
         self.options.add_argument(f"user-agent={env.User_Agent}")
         self.browser = webdriver.Chrome(options=self.options)
 
-    def change_url(self):
-        self.keyword_idx
-        url = ("https://gall.dcinside.com/mgallery/board/lists?id={}").format(self.mbti_url[self.keyword_idx])
+    def change_url(self, keyword):
+        url = ("https://gall.dcinside.com/mgallery/board/lists?id={}&exception_mode=recommend").format(keyword)
         self.browser.get(url)
+        self.keyword_idx += 1
         time.sleep(2)
+
+    def get_soup(self):
+        soup = BeautifulSoup(self.browser.page_source, "lxml")
+
+        titles = soup.select("td", attrs={"class":"gall_tit ub-word"})
+
+        return titles
+
+    def run(self):
+        for self.mbti_url in self.mbti_urls:
+            self.change_url(self.mbti_url)
+            print(self.get_soup())
 
 if __name__ == "__main__":
     url1 = "https://www.instagram.com/"
@@ -501,11 +512,14 @@ if __name__ == "__main__":
     url3 = "https://www.facebook.com"
     # instagram = Instagram_crawler()
     # everytime = Everytime_crawler()
-    facebook = Facebook_crawler()
+    # facebook = Facebook_crawler()
+    
+    dc = Dcinside_crawler()
+    dc.run()
 
     # try:
     # instagram.run()
     # everytime.Crawl_MBTI_Articles()
-    facebook.run()
+    # facebook.run()
     # except:
         # print("[ERROR]")
