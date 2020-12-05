@@ -476,35 +476,61 @@ class Facebook_crawler:
         self.crawl_facebook_image()
 
 # Progress
-class Dcinside_crawler:
+class DC_crawler:
     def __init__(self):
-        self.mbti_urls = ["entp","enfp","entj","enfj","esfp","esfj","estj","esfp",
-                         "intp_mbti","infp","intj","infj","isfp","isfj","istj","isfp"]
+        self.mbti_urls = ["istj","isfp"]
         self.keyword_idx = 0
+        self.url_idx = 0
         self.headers = {"User-Agent":env.User_Agent}
         self.options = webdriver.ChromeOptions()
+        self.extender = ".csv"
         # self.options.headless = True
         # self.options.add_argument("window-size=1920x1080")
         self.options.add_argument(f"user-agent={env.User_Agent}")
         self.browser = webdriver.Chrome(options=self.options)
+    
+    def crawl_mbti_article(self):
+        """
+        Crawl mbti article.
 
-    def change_url(self, keyword):
-        url = ("https://gall.dcinside.com/mgallery/board/lists?id={}&exception_mode=recommend").format(keyword)
-        self.browser.get(url)
-        self.keyword_idx += 1
-        time.sleep(2)
+        Args:
+            None
 
-    def get_soup(self):
-        soup = BeautifulSoup(self.browser.page_source, "lxml")
+        Returns:
+            None
 
-        titles = soup.select("td", attrs={"class":"gall_tit ub-word"})
+        Raises:
+            None
+        """
+        for mbti in self.mbti_urls:
+            f = open("MBTI_"+ mbti + self.extender, "w", encoding="utf-8-sig", newline="")
+            writer = csv.writer(f)
 
-        return titles
+            writer.writerow([mbti])
+
+            title = "제목"
+            writer.writerow([title])
+
+            for i in range(1, 31):                            
+                self.browser.get('https://gall.dcinside.com/mgallery/board/lists/?id={}&page={}'.format(mbti, i))
+                
+                soup = BeautifulSoup(self.browser.page_source, "html.parser")
+                
+                articles = soup.find("table").find("tbody").find_all("tr", attrs={"class":"ub-content us-post"})
+
+                for article in articles:
+                    columns = article.find_all("td", attrs={"class":"gall_tit ub-word"})
+                    for column in columns:
+                        what_to_write = column.find("a").get_text()
+                        writer.writerow([what_to_write])
+                time.sleep(3)
+        time.sleep(20)
+
+            
+
 
     def run(self):
-        for self.mbti_url in self.mbti_urls:
-            self.change_url(self.mbti_url)
-            print(self.get_soup())
+        self.crawl_mbti_article()
 
 if __name__ == "__main__":
     url1 = "https://www.instagram.com/"
@@ -514,7 +540,7 @@ if __name__ == "__main__":
     # everytime = Everytime_crawler()
     # facebook = Facebook_crawler()
     
-    dc = Dcinside_crawler()
+    dc = DC_crawler()
     dc.run()
 
     # try:
