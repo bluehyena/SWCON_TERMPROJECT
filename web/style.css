@@ -1,16 +1,16 @@
-<style>body {
+body {
   font-family: "Lato", sans-serif;
+    width : 100vw;
+    overflow: hidden !important; 
+    height: 100vh !important;
+
 }
 
-.sec{
-  display: flex;
-}
 
 .sidenav {
   height: 100%;
   width: 196;
   position: fixed;
-  z-index: 1;
   top: 0;
   left: 0;
   background-color: white;
@@ -36,14 +36,36 @@
 .sidenav a:hover {
   color: #f1f1f1;
 }
-
-
-.main {
-  margin-left: 260px; /* Same as the width of the sidenav */
-  font-size: 28px; /* Increased text to enable scrolling */
-  padding: 0px 10px;
+/* main section */ 
+.wrapper{
+    width : 1619px;
+    height: 100vh; 
+    margin-left: 300px;
+    display: flex;
+    flex-wrap: wrap; 
+    font-size: 0;
+    flex-direction: column;
+    box-sizing: border-box; 
 }
-
+.box{
+    margin :0;
+    width: 400px;
+    height :420px;
+    z-index: 1001; 
+    box-sizing: border-box;
+    position :relative;
+}
+.img-contain {
+    position : absolute;
+    left:0;
+    top:0;
+    width :410px;
+    height: 420px;
+}
+.box img{
+    width :inherit;
+    height:inherit;
+}
 @media screen and (max-height: 450px) {
   .sidenav {
     padding-top: 15px;
@@ -53,18 +75,3 @@
     font-size: 18px;
   }
 }
-.grid-container {
-  display: grid;
-  grid-template-columns: auto auto auto auto;
-  grid-gap: ;
-  background-color: #2196F3;
-  padding: ;
-}
-
-.grid-container > div {
-  background-color: rgba(255, 255, 255, 0.8);
-  text-align: center;
-  font-size: 30px;
-}
-
-</style>
