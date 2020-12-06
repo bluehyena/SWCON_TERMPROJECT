@@ -1,0 +1,70 @@
+body {
+    font-family: "Lato", sans-serif;
+  }
+  .sec{
+    width : 285px;
+  }
+  
+  .sidenav {
+    height: 100%;
+    width: 196;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: white;
+    overflow-x: hidden;
+    padding-top: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
+  }
+  
+  .sidenav a {
+    height: 24px;
+    padding: 18px 40px 18px 40px;
+    text-decoration: none;
+    font-family: 'Roboto, "Nanum Gothic", Tahoma, Dotum, Verdana, Arial, "Trebuchet MS","Noto sans","Noto sans kr';
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    color: #636363;
+    display: block;
+  }
+  .sidenav a:hover {
+    color: #f1f1f1;
+  }
+  
+  
+    @media screen and (max-height: 450px) {
+    .sidenav {
+      padding-top: 15px;
+    }
+  
+    .sidenav a {
+      font-size: 18px;
+    }
+  } 
+  
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    background-color: #2196F3;
+  }
+  
+  .grid-container > div {
+    background-color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    font-size: 30px;
+  }
+  
+  
+  
+  /*main 부분 */
+  .main-content{
+    margin-top: 100px;
+    z-index: 1001;
+    margin-left : 400px;
+    width : 60%;
+  }
+  
