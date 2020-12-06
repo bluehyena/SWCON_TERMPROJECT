@@ -1,81 +1,124 @@
 import time
-import requests
-import os
-import csv
+# import requests
+# import os
+# import csv
+
+from urllib.request import Request, urlopen
+import urllib.parse
+import time
+import pandas as pd
+import env
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException,StaleElementReferenceException
 
-import env
+# import env
+browser = webdriver.Chrome()
 
-class Everytime_crawler:
-    def __init__(self):
-        self.mbti_urls = ["entp","enfp","entj","enfj","esfp","esfj","estj","esfp",
-                         "intp_mbti","infp","intj","infj","isfp","isfj","istj","isfp"]
-        self.keyword_idx = 0
-        self.url_idx = 0
-        self.headers = {"User-Agent":env.User_Agent}
-        self.options = webdriver.ChromeOptions()
-        # self.options.headless = True
-        # self.options.add_argument("window-size=1920x1080")
-        self.options.add_argument(f"user-agent={env.User_Agent}")
-        self.browser = webdriver.Chrome(options=self.options)
+def get_article_url():
+    SCROLL_PAUSE_TIME = 1.0
+    reallink = []
+
+    search = input('Input keyword :')
+    search = urllib.parse.quote(search)
+    url = 'https://www.instagram.com/explore/tags/' + str(search) + '/'
+    browser = webdriver.Chrome()
+    browser.get(url)
+    time.sleep(3)
+
+    while True:
+        pageString = browser.page_source
+        bs0bj = BeautifulSoup(browser.page_source, "html.parser")
+
+        for link1 in bs0bj.find_all(name='div',attrs={"class":"Nnq7C weEfm"}):
+            title = link1.select('a')[0]
+            real = title.attrs=['href']
+            reallink.append(real)
+            title = link1.select('a')[1]
+            real = title.attrs=['href']
+            reallink.append(real)
+            title = link1.select('a')[2]
+            real = title.attrs=['href']
+            reallink.append(real)
+
+        last_height = browser.execute_script("return document.body.scrollHeight")
+        browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(SCROLL_PAUSE_TIME)
+        new_height = browser.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(SCROLL_PAUSE_TIME)
+            new_height = browser.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+
+            else:
+                last_height = new_height
+                continue
     
-    def change_url(self, keyword: str) -> str: 
-        """ 
-        Change browser to the other tab.
+    csvtext = []
 
-        Args:
-            url: String value of url to be changed.
+    reallinknum = len(reallink)
+    print("총"+str(reallinknum)+"개의 데이터.")
+    
+    try:
+        for i in range(0, reallinknum):
+            csvtext.append([])
+            req = Request('https://www.instagram.com/p' + reallink[i], headers={env.User_Agent})
 
-        Returns:
-            None
+            webpage = urlopen(req).read()
+            soup = BeautifulSoup(webpage, "html.parser", from_encoding='utf-8-sig')
+            soup1 = soup.find("meta", attrs={"property":"og:description"})
 
-        Raises:
-            None
-        """
+            reallink1 = soup['context']
+            reallink1 = reallink[reallink1.find("@")+1:reallink1.find(")")]
+            reallink1 = reallink1[:20]
+            if reallink1 =='':
+                reallink1 = 'Null'
+            csvtext[i].append(reallink1)
+
+            for reallink2 in soup.find_all("meta", attrs={"property":"instapp:hashtags"}):
+                reallink2 = reallink2['content']
+                csvtext[i].append(reallink2)
+            
+            print(str(i+1)+"개의 데이터 받아오는 중.")
+            print(csvtext)
+            data = pd.DataFrame(csvtext)
+            data.to_csv('insta.txt', encoding='utf-8')  
+    except:
+        print("오류발생"+str(i+1)+"개의 데이터를 저장합니다.")
+        data = pd.DataFrame(csvtext)
+        data.to_csv('insta.txt', encoding='utf-8') 
+
+    print("저장성공")  
+
+def get_img_url():
+    temp = []
+    myurls = ['mbti_lab']
+    browser = webdriver.Chrome()
+    
+    for myurl in myurls:
+        url = "https://www.instagram.com/" + myurl
+        browser.get(url)
+
+        while True:
+            soup = BeautifulSoup(browser.page_source, 'html.parser')
+            imgs = soup.select('img')[1]
+            imgs = imgs.attrs['src']
+            temp.append(imgs)
+           
+            try:
+                browser.find_element_by_class_name("coreSpriteRightChevron").click()
+            except NoSuchElementException:
+                break
+            
+        browser.close()
+        print("Success")
         
-        assert isinstance(keyword, str)
-        
-        url = ("https://gall.dcinside.com/mgallery/board/lists?id={}&exception_mode=recommend").format(keyword)
-        self.browser.get(url)
-        self.keyword_idx += 1
-        time.sleep(2)
+        return temp
 
-        self.url = url
+if __name__ == "__main__":
+    get_article_url()
 
-
-    def crawl_mbti_article(self):
-        """
-        Crawl mbti article.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        Raises:
-            None
-        """
-        # Write as csv
-        f = open("MBTI_"+ self.mbti_urls[self.keyword_idx] + self.extender, "w", encoding="utf-8-sig", newline="")
-        writer = csv.writer(f)
-
-        # Write first row
-        title = "제목"
-        writer.writerow(title)
-
-        for mbti in self.mbti_urls:
-            writer.writerow(mbti)
-            for i in range(1, 31):
-                self.browser.get('https://gall.dcinside.com/mgallery/board/lists/?id={}&page={}'.format(mbti, i))
-                soup = BeautifulSoup(self.browser.page_source, "html.parser")
-                articles = soup.find("table", attrs={"class":"gall_list  "}).find("tbody").find_all("tr")
-
-                for article in articles:
-                    columns = article.find_all("td", attrs={"class":"gall_tit ub-word"}).get_text()
-                    if len(columns) <= 1:
-                       continue
-                    data = [column.get_text().strip() for column in columns]
-                    writer.writerow(data)
+    
