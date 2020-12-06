@@ -25,12 +25,7 @@ class Instagram_crawler:
         self.__instagram_password = env.instagram_user_password
         self.img_idx = 0
         self.img_slide = 0
-        # self.headers = {"User-Agent":env.User_Agent}
-        # self.options = webdriver.ChromeOptions()
-        # self.options.headless = True
-        # self.options.add_argument("window-size=1920x1080")
-        # self.options.add_argument(f"user-agent={env.User_Agent}")
-        # self.browser = webdriver.Chrome(options=self.options)
+        self.instagram_mbti_id = ['mbti_lab']
         self.browser = webdriver.Chrome()
 
     def login(self, url: str) -> None: #Fin
@@ -94,110 +89,11 @@ class Instagram_crawler:
                 break
             prev_height = curr_height
     
-    def change_url(self, url: str) -> None: #Fin (time interval changeable)
-        """
-        Change browser to the other tab.
+    def crawl_instagram_mbti(self)-> None:
+        for instagram_id in self.instagram_mbti_id:
+            self.browser.get('https://www.instagram.com/{}'.format(instagram_id))
 
-        Args:
-            url: String value of url to be changed.
-
-        Returns:
-            None
-
-        Raises:
-            None
-        """
-        assert isinstance(url, str)
-        
-        self.browser.get(url)
-        time.sleep(2)
-
-    def click_feed_image(self) -> None: #Fin
-        """
-        Click image of instagram feed.
-        
-        Args:
-            None
-
-        Returns:
-            None
-
-        Raises:
-            None
-        """
-        self.browser.find_element_by_class_name("_9AhH0").click()
-        time.sleep(1)
-
-    def save_feed_images(self) -> None:  #Need fix
-        """
-        Crawl image of instagram feed and save .
-        
-        Args:
-            None
-
-        Returns:
-            None
-
-        Raises:
-            None
-        """
-        #Make directory for crawled images.
-        if not os.path.exists("image_dir_instagram"):
-            os.mkdir("image_dir_instagram")
-        
-        self.next_slide_button = self.browser.find_element_by_class_name("coreSpriteRightChevron")
-        self.next_feed_button = self.browser.find_element_by_class_name("_65Bje.coreSpriteRightPaginationArrow")
-        
-        # img_idx 로 몇번째 사진인지 명시
-        # img_slide 로 게시물당 몇번째의 사진인지 명시하여 다음 게시물로 넘어갈지 판단
-        # 맨 끝 img_slide 일 경우 다음 게시물로 넘어가는 버튼클릭, img_slide = 0 으로 다시 초기화.
-        # Try Except 추가 필요
-        
-        while True:
-            self.img_idx += 1
-            self.img_slide += 1
-
-            if self.img_slide == 1:
-                soup = BeautifulSoup(self.browser.page_source, "lxml")
-                img = soup.find("img", attrs={"class":"FFVAD"})
-                img_url = img["src"]
-                img_res = requests.get(img_url)
-                img_res.raise_for_status()
-
-                # Save images into jpg file.
-                with open("image_dir_instagram\mbti_image{}.jpg".format(self.img_idx), "wb") as f:
-                    f.write(img_res.content)
-
-                # Next button
-                if self.next_slide_button:
-                    self.next_slide_button.click()
-                    time.sleep(0.3)
-                # If next button isn't exist, click another feed button
-                else:
-                    self.next_feed_button.click()
-                    self.img_slide = 0
-                    time.sleep(1.5)
-
-            else:
-                soup = BeautifulSoup(self.browser.page_source, "lxml")
-                img = soup.find("img", attrs={"class":"FFVAD"})
-                img_url = img["src"]
-                img_res = requests.get(img_url)
-                img_res.raise_for_status()
-
-                # Save images into jpg file.
-                with open("image_dir_instagram\mbti_image{}.jpg".format(self.img_idx), "wb") as f:
-                    f.write(img_res.content)
-
-                # Next button
-                if self.next_slide_button:
-                    self.next_slide_button.click()
-                    time.sleep(0.3)
-                # If next button isn't exist, click another feed button
-                else:
-                    self.next_feed_button.click()
-                    self.img_slide = 0
-                    time.sleep(1.5)
+            
 
     def run(self):
         """
@@ -212,20 +108,9 @@ class Instagram_crawler:
         Raises:
             None
         """
-        self.login(url1)
-        self.change_url(url1+"mbti_bot/")
+        self.login("https://www.instagram.com/")
         
-        
-        # for 게시물 in range(게시물 개수):
-        #     if 화살표버튼:
-        #         self.save_image()
-        #         self.load_another_image()
-        #     else:
-        #         self.save_image()
 
-
-        self.click_feed_image()
-        self.save_feed_images()
 
 # Success
 class Everytime_crawler:
@@ -526,9 +411,6 @@ class DC_crawler:
                 time.sleep(3)
         time.sleep(20)
 
-            
-
-
     def run(self):
         self.crawl_mbti_article()
 
@@ -536,12 +418,16 @@ if __name__ == "__main__":
     url1 = "https://www.instagram.com/"
     url2 = "https://khu.everytime.kr/460213/p/1"
     url3 = "https://www.facebook.com"
-    # instagram = Instagram_crawler()
-    # everytime = Everytime_crawler()
-    # facebook = Facebook_crawler()
     
-    dc = DC_crawler()
-    dc.run()
+    # instagram = Instagram_crawler()
+    # # everytime = Everytime_crawler()
+    # # facebook = Facebook_crawler()
+    
+    instagram = Instagram_crawler()
+    instagram.run()
+
+    # dc = DC_crawler()
+    # dc.run()
 
     # try:
     # instagram.run()
