@@ -94,7 +94,6 @@ class Instagram_crawler:
             self.browser.get('https://www.instagram.com/{}'.format(instagram_id))
 
             
-
     def run(self):
         """
         Run Functions
