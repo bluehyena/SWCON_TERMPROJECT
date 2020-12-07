@@ -6,7 +6,7 @@ import time
 from urllib.request import Request, urlopen
 import urllib.parse
 import time
-import pandas as pd
+import pandas
 import env
 
 from bs4 import BeautifulSoup
@@ -84,11 +84,11 @@ def get_article_url():
             
             print(str(i+1)+"개의 데이터 받아오는 중.")
             print(csvtext)
-            data = pd.DataFrame(csvtext)
+            data = pandas.DataFrame(csvtext)
             data.to_csv('insta.txt', encoding='utf-8')  
     except:
         print("오류발생"+str(i+1)+"개의 데이터를 저장합니다.")
-        data = pd.DataFrame(csvtext)
+        data = pandas.DataFrame(csvtext)
         data.to_csv('insta.txt', encoding='utf-8') 
 
     print("저장성공")  
