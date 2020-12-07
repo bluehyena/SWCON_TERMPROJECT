@@ -5,7 +5,6 @@ import time
 import env
 import os 
 
-from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException 
 from selenium import webdriver
 from bs4 import BeautifulSoup
