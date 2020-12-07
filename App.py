@@ -109,8 +109,6 @@ class Instagram_crawler:
         """
         self.login("https://www.instagram.com/")
         
-
-
 # Success
 class Everytime_crawler:
     def __init__(self):
@@ -362,7 +360,7 @@ class Facebook_crawler:
 # Progress
 class DC_crawler:
     def __init__(self):
-        self.mbti_urls = ["istj","isfp"]
+        self.mbti_urls = ["istp"]
         self.keyword_idx = 0
         self.url_idx = 0
         self.headers = {"User-Agent":env.User_Agent}
@@ -407,7 +405,7 @@ class DC_crawler:
                     for column in columns:
                         what_to_write = column.find("a").get_text()
                         writer.writerow([what_to_write])
-                time.sleep(3)
+                time.sleep(6)
         time.sleep(20)
 
     def run(self):
@@ -422,8 +420,8 @@ if __name__ == "__main__":
     # # everytime = Everytime_crawler()
     # # facebook = Facebook_crawler()
     
-    instagram = Instagram_crawler()
-    instagram.run()
+    dc = DC_crawler()
+    dc.run()
 
     # dc = DC_crawler()
     # dc.run()
