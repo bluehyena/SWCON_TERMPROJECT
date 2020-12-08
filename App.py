@@ -393,7 +393,7 @@ class DC_crawler:
             title = "제목"
             writer.writerow([title])
 
-            for i in range(1, 31):                            
+            for i in range(23, 31):                            
                 self.browser.get('https://gall.dcinside.com/mgallery/board/lists/?id={}&page={}'.format(mbti, i))
                 
                 soup = BeautifulSoup(self.browser.page_source, "html.parser")
