@@ -37,18 +37,9 @@ body {
 }
 
 .sidenav a:hover {
-  color: #f1f1f1;
+  color: blue;
 }
 
-@media screen and (max-height: 450px) {
-  .sidenav {
-    padding-top: 15px;
-  }
-
-  .sidenav a {
-    font-size: 18px;
-  }
-}
 
 .p1 {
   font-family: "Oseong and HanEum";
@@ -72,4 +63,15 @@ body {
   z-index: 1001;
   margin-left: 400px;
   width: 70%;
+}
+
+
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+
+  .sidenav a {
+    font-size: 18px;
+  }
 }
