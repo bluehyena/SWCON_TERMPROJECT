@@ -3,11 +3,10 @@
 #        Team: 소융개론텀프로젝트 이준혁,임성은
 #  Programmer: 이준혁     
 #  Start Date: 06/10/22
-#  Update Num: 9
 #First Update: Oct 22, 2020
-# Last Update: Nov 13, 2020
 #     Purpose: Crawling Instagram, FaceBook, Everytime, DCinside about MBTI.
 """
+
 import time
 import requests
 import os
@@ -16,16 +15,16 @@ import csv
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
-import env
-
-# Need Fix
-class Instagram_crawler:
+# env.py file include instagram account, facebook account, everytime account, user_agent. 
+import env 
+ 
+class Instagram_crawler: 
     def __init__(self):
         self.__instagram_id = env.instagram_user_id
         self.__instagram_password = env.instagram_user_password
         self.img_idx = 0
         self.img_slide = 0
-        self.instagram_mbti_id = ['mbti_lab']
+        self.instagram_mbti_id = ['mbti_lab'] # Input Instagram ID which you want to crawling.
         self.browser = webdriver.Chrome()
 
     def login(self, url: str) -> None: #Fin
@@ -92,7 +91,6 @@ class Instagram_crawler:
     def crawl_instagram_mbti(self)-> None:
         for instagram_id in self.instagram_mbti_id:
             self.browser.get('https://www.instagram.com/{}'.format(instagram_id))
-
             
     def run(self):
         """
@@ -110,20 +108,14 @@ class Instagram_crawler:
         self.login("https://www.instagram.com/")
         
 # Success
-class Everytime_crawler:
+class Everytime_crawler: 
     def __init__(self):
         self.__everytime_id = env.everytime_user_id
         self.__everytime_password = env.everytime_user_password
         self.extender = ".csv"
-        # self.headers = {"User-Agent":env.User_Agent}
-        # self.options = webdriver.ChromeOptions()
-        # self.options.headless = True
-        # self.options.add_argument("window-size=1920x1080")
-        # self.options.add_argument(f"user-agent={env.User_Agent}")
-        # self.browser = webdriver.Chrome(options=self.options)
         self.browser = webdriver.Chrome()
     
-    def login(self, url: str) -> None:
+    def login(self, url: str) -> None: #Fin
         """
         Login to everytime browser.
 
@@ -165,7 +157,7 @@ class Everytime_crawler:
         self.browser.get(url)
         time.sleep(1)
 
-    def crawl_mbti_article_button_click(self):
+    def crawl_mbti_article_button_click(self): #Fin
         """
         Crawl mbti article.
 
@@ -191,8 +183,7 @@ class Everytime_crawler:
         while next_article_button:
             soup = BeautifulSoup(self.browser.page_source, "lxml")
             articles = soup.find_all("article")
-            
-            #I want to change codes.
+
             for article in articles:
                 writer_name = article.find("h3", attrs={"class":"medium"}).get_text()
                 write_time = article.find("time", attrs={"class":"medium"}).get_text()
@@ -200,9 +191,7 @@ class Everytime_crawler:
                 recommend = article.find("li", attrs={"class":"vote"}).get_text()
                 comments = article.find("li", attrs={"class":"comment"}).get_text()
                 data = [writer_name, write_time, contents, recommend, comments]
-                # columns = article.find_all(attrs={"class":"medium"})
-                # for columns in column:
-                #     data = [column.get_text().strip()]
+
                 writer.writerow(data)
 
             next_article_button.click()
@@ -247,10 +236,9 @@ class Everytime_crawler:
                 data = [column.get_text().strip() for column in columns]
                 writer.writerow(data)
 
-    def Crawl_MBTI_Articles(self) -> None:
+    def Crawl_MBTI_Articles(self) -> None: #Fin
         self.login(url2)
         self.crawl_mbti_article_button_click()
-        # self.crawl_mbti_article_by_requests("https://khu.everytime.kr/460213/p/")
 
 # Success
 class Facebook_crawler:
@@ -260,13 +248,10 @@ class Facebook_crawler:
         self.img_idx = 0
         self.headers = {"User-Agent":env.User_Agent}
         self.options = webdriver.ChromeOptions()
-        # self.options.headless = True
-        # self.options.add_argument("window-size=1920x1080")
         self.options.add_argument(f"user-agent={env.User_Agent}")
         self.browser = webdriver.Chrome(options=self.options)
-        # self.browser = webdriver.Chrome()
 
-    def login(self, url: str) -> None:
+    def login(self, url: str) -> None: #Fin
         """
         Login to facebook browser.
 
@@ -290,7 +275,7 @@ class Facebook_crawler:
         self.browser.find_element_by_xpath("//*[@id='u_0_b']").click()
         time.sleep(5)
 
-    def facebook_search(self, keyword: str) -> None:
+    def facebook_search(self, keyword: str) -> None: #Fin
         """
         Get url of photo search results.
 
@@ -333,7 +318,7 @@ class Facebook_crawler:
             prev_height = curr_height
             scroll_num += 1
     
-    def crawl_facebook_image(self) -> None:
+    def crawl_facebook_image(self) -> None: #Fin
         if not os.path.exists("image_dir_facebook"):
             os.mkdir("image_dir_facebook")
         
@@ -350,28 +335,25 @@ class Facebook_crawler:
             with open("image_dir_facebook\mbti_image{}.jpg".format(self.img_idx), "wb") as f:
                 f.write(img_res.content)
 
-
-    def run(self): 
+    def run(self):  #Fin
         self.login(url3)
         self.facebook_search("MBTI")
         self.scroll_down()
         self.crawl_facebook_image()
 
-# Progress
+# Success
 class DC_crawler:
-    def __init__(self):
-        self.mbti_urls = ["istp"]
+    def __init__(self): #Fin
+        self.mbti_urls = ["enfj","enfp","entj","entp","esfj","esfp","estj",'estp',"infj","infp","intj","intp_mbti","isfj","isfp","istj","istp"]
         self.keyword_idx = 0
         self.url_idx = 0
         self.headers = {"User-Agent":env.User_Agent}
         self.options = webdriver.ChromeOptions()
         self.extender = ".csv"
-        # self.options.headless = True
-        # self.options.add_argument("window-size=1920x1080")
         self.options.add_argument(f"user-agent={env.User_Agent}")
         self.browser = webdriver.Chrome(options=self.options)
     
-    def crawl_mbti_article(self):
+    def crawl_mbti_article(self) -> None: #Fin
         """
         Crawl mbti article.
 
@@ -393,7 +375,7 @@ class DC_crawler:
             title = "제목"
             writer.writerow([title])
 
-            for i in range(1, 31):                            
+            for i in range(23, 31):                            
                 self.browser.get('https://gall.dcinside.com/mgallery/board/lists/?id={}&page={}'.format(mbti, i))
                 
                 soup = BeautifulSoup(self.browser.page_source, "html.parser")
@@ -406,9 +388,10 @@ class DC_crawler:
                         what_to_write = column.find("a").get_text()
                         writer.writerow([what_to_write])
                 time.sleep(6)
+        
         time.sleep(20)
 
-    def run(self):
+    def run(self): #Fin
         self.crawl_mbti_article()
 
 if __name__ == "__main__":
@@ -416,19 +399,8 @@ if __name__ == "__main__":
     url2 = "https://khu.everytime.kr/460213/p/1"
     url3 = "https://www.facebook.com"
     
-    # instagram = Instagram_crawler()
-    # # everytime = Everytime_crawler()
-    # # facebook = Facebook_crawler()
-    
-    dc = DC_crawler()
-    dc.run()
-
-    # dc = DC_crawler()
-    # dc.run()
-
-    # try:
-    # instagram.run()
-    # everytime.Crawl_MBTI_Articles()
-    # facebook.run()
-    # except:
-        # print("[ERROR]")
+    try:
+        dc = DC_crawler()
+        dc.run()
+    except:
+        print('[ERROR]')

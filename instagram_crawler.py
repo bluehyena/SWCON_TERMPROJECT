@@ -12,7 +12,7 @@ from urllib.request import Request, urlopen
 
 def my_url_list(browser):
     search = input("크롤링한 인스타그램의 아이디를 입력하세요: " )
-    limit = int(input("크롤링할 게시글 수 입력 (0을 입력하면 끝까지 크롤링) : " ))
+    limit = 0
     url = 'https://www.instagram.com/'
     browser.get(url)
     browser.maximize_window()
