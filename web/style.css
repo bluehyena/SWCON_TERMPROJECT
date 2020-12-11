@@ -14,8 +14,8 @@ body {
   background-color: white;
   overflow-x: hidden;
   padding-top: 20px;
-  padding-left: 30px;
-  padding-right: 10px;
+  padding-left: 23px;
+  padding-right: 20px;
   text-align: center;
 }
 
@@ -35,6 +35,7 @@ body {
   color: blue;
 }
 
+
 /* main section */
 .wrapper {
   padding-top: 60px;
@@ -46,6 +47,7 @@ body {
   font-size: 0;
   flex-direction: column;
   box-sizing: border-box;
+  padding-right: 30px;
 }
 
 .box {
@@ -108,4 +110,33 @@ input {
   .sidenav a {
     font-size: 18px;
   }
+}
+
+body {
+  background-color: white;
+}
+
+form {
+  width: 1000px;
+  margin-auto;
+  margin-top: 80px;
+  margin-left: 300px;
+}
+
+input {
+  text-align: center;
+}
+
+.search {
+  width: 80%;
+  padding: 10px;
+  font-size: 20px;
+}
+
+.submit {
+  width: 15%;
+  padding: 10px;
+  font-size: 20px;
+  background-color: #333399;
+  color: white;
 }
