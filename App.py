@@ -375,7 +375,7 @@ class DC_crawler:
             title = "제목"
             writer.writerow([title])
 
-            for i in range(23, 31):                            
+            for i in range(0, 31):                            
                 self.browser.get('https://gall.dcinside.com/mgallery/board/lists/?id={}&page={}'.format(mbti, i))
                 
                 soup = BeautifulSoup(self.browser.page_source, "html.parser")
@@ -387,7 +387,7 @@ class DC_crawler:
                     for column in columns:
                         what_to_write = column.find("a").get_text()
                         writer.writerow([what_to_write])
-                time.sleep(6)
+                time.sleep(0.5)
         
         time.sleep(20)
 
@@ -399,8 +399,8 @@ if __name__ == "__main__":
     url2 = "https://khu.everytime.kr/460213/p/1"
     url3 = "https://www.facebook.com"
     
-    try:
-        dc = DC_crawler()
-        dc.run()
-    except:
-        print('[ERROR]')
+    # try:
+    dc = DC_crawler()
+    dc.run()
+    # except:
+    # print('[ERROR]')

@@ -18,7 +18,7 @@ from urllib.request import Request, urlopen
 
 def my_url_list(browser):
     search = input("input instagram ID: " )
-    limit = 20
+    limit = 2
     url = 'https://www.instagram.com/'
     browser.get(url)
     browser.maximize_window()
@@ -40,7 +40,7 @@ def my_url_list(browser):
 
     while True:
         pageString = browser.page_source
-        bsObj = BeautifulSoup(pageString, "lxml")
+        bsObj = BeautifulSoup(pageString, "html.parser")
         
         for link1 in bsObj.find_all(name="div",attrs={"class":"Nnq7C weEfm"}):
                 try:
@@ -107,7 +107,7 @@ def get_img_url():
         while(1):
             time.sleep(1)
             pageString = browser.page_source 
-            soup = BeautifulSoup(pageString, "lxml")
+            soup = BeautifulSoup(pageString, "html.parser")
             try:
                 videos = soup.select('.tWeCl')
                 videos = soup.select('src')
