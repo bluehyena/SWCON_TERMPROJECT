@@ -1,3 +1,9 @@
+"""
+#   File Name: instagram_crawler.py
+#        Team: 소융개론텀프로젝트 이준혁,임성은
+#  Programmer: 이준혁     
+#     Purpose: Crawling Instagram images.
+"""
 import urllib.request
 import selenium.webdriver as webdriver
 import urllib.parse
@@ -11,8 +17,8 @@ from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
 
 def my_url_list(browser):
-    search = input("크롤링한 인스타그램의 아이디를 입력하세요: " )
-    limit = 0
+    search = input("input instagram ID: " )
+    limit = 20
     url = 'https://www.instagram.com/'
     browser.get(url)
     browser.maximize_window()
